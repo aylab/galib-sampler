@@ -33,7 +33,7 @@ void run_ga (input_params& ip) {
 		population[i].initialize(ip.num_dims);
 		newpopulation[i].initialize(ip.num_dims);
 	}
-	initialize("simple_ga_input.txt", ip, population);
+	initialize(ip, population);
 	evaluate(ip, population);
 	keep_the_best(ip, population);
 	for (int generation = 0; generation < ip.generations; generation++) {

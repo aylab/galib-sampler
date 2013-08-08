@@ -169,7 +169,7 @@ void open_file (ofstream* file_pointer, const char* file_name, bool append) {
 	notes:
 	todo:
 */
-double simulate_set (double parameters[], input_params& ip) {
+double simulate_set (input_params& ip, double parameters[]) {
 	// Create a pipe
 	int pipes[2];
 	cout << term->blue << "  Creating a pipe " << term->reset << ". . . ";

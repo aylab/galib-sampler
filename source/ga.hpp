@@ -23,11 +23,8 @@ ga.hpp contains function declarations for ga.cpp.
 #ifndef GA_HPP
 #define GA_HPP
 
-#include <ga/GASimpleGA.h> // Needed for GAGenome
-
 #include "structs.hpp"
 
-float Objective(GAGenome&);
 void run_ga(input_params&);
 
 #endif

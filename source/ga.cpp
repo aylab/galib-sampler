@@ -23,9 +23,26 @@ Avoid placing I/O functions here and add them to io.cpp instead.
 
 #include "ga.hpp" // Function declarations
 
+#include "galib.cpp"
 #include "io.hpp"
 
 void run_ga (input_params& ip) {
-	
+	genotype population[ip.population + 1];
+	genotype newpopulation[ip.population + 1];
+	for (int i = 0; i < ip.population + 1; i++) {
+		population[i].initialize(ip.num_dims);
+		newpopulation[i].initialize(ip.num_dims);
+	}
+	initialize("simple_ga_input.txt", ip, population);
+	evaluate(ip, population);
+	keep_the_best(ip, population);
+	for (int generation = 0; generation < ip.generations; generation++) {
+		selector(ip, population, newpopulation);
+		crossover(ip, population);
+		mutate(ip, population);
+		report(generation, ip, population);
+		evaluate(ip, population);
+		elitist(ip, population);
+	}
 }
 

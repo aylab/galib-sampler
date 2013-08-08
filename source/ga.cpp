@@ -16,4 +16,16 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*
+ga.cpp contains function to interact with the genetic algorithm library.
+Avoid placing I/O functions here and add them to io.cpp instead.
+*/
+
+#include "ga.hpp" // Function declarations
+
+#include "io.hpp"
+
+void run_ga (input_params& ip) {
+	
+}
 

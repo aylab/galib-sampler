@@ -1,10 +1,9 @@
 *.o
 *~
 .sconsign.dblite
-sres
+ga
 input.*
 output.*
 output-*
 *.gradients
 .DS_Store
-pbs-job

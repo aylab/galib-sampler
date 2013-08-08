@@ -1,0 +1,10 @@
+*.o
+*~
+.sconsign.dblite
+sres
+input.*
+output.*
+output-*
+*.gradients
+.DS_Store
+pbs-job

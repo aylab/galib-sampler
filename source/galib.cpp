@@ -21,11 +21,12 @@ galib.cpp contains the genetic algorithm library taken from http://people.sc.fsu
 */
 
 #include <cmath> // Needed for sqrt
-#include <iomanip> // Needed for setw
 
 #include "io.hpp"
 
 using namespace std;
+
+extern terminal* term; // Declared in init.cpp
 
 //
 //  Each GENOTYPE is a member of the population, with
@@ -43,23 +44,43 @@ struct genotype {
 	double* lower;
 	double rfitness;
 	double cfitness;
+	int num_dims;
 	
 	genotype () {
 		this->gene = NULL;
+		this->fitness = 0;
 		this->upper = NULL;
 		this->lower = NULL;
+		this->rfitness = 0;
+		this->cfitness = 0;
 	}
 	
 	void initialize (int num_dims) {
 		this->gene = new double[num_dims];
 		this->upper = new double[num_dims];
 		this->lower = new double[num_dims];
+		memset(this->gene, 0, sizeof(double) * num_dims);
+		memset(this->upper, 0, sizeof(double) * num_dims);
+		memset(this->lower, 0, sizeof(double) * num_dims);
+		this->num_dims = num_dims;
 	}
 	
 	~genotype () {
 		delete[] this->gene;
 		delete[] this->upper;
 		delete[] this->lower;
+	}
+	
+	genotype& operator= (const genotype& g) {
+		this->fitness = g.fitness;
+		this->rfitness = g.rfitness;
+		this->cfitness = g.cfitness;
+		for (int i = 0; i < this->num_dims; i++) {
+			this->gene[i] = g.gene[i];
+			this->upper[i] = g.upper[i];
+			this->lower[i] = g.lower[i];
+		}
+		return *this;
 	}
 };
 
@@ -100,7 +121,6 @@ void crossover (input_params& ip, genotype* population) {
 
     }
   }
-  return;
 }
 
 void elitist (input_params& ip, genotype* population) {
@@ -171,10 +191,7 @@ void elitist (input_params& ip, genotype* population) {
       population[worst_mem].gene[i] = population[ip.population].gene[i];
     }
     population[worst_mem].fitness = population[ip.population].fitness;
-  } 
-
-  return;
-
+  }
 }
 
 void evaluate (input_params& ip, genotype* population) {
@@ -190,7 +207,6 @@ void evaluate (input_params& ip, genotype* population) {
     } 
     population[member].fitness = simulate_set(ip, x);
   }
-  return;
 }
 
 void initialize (input_params& ip, genotype* population) {
@@ -214,34 +230,19 @@ void initialize (input_params& ip, genotype* population) {
       population[j].gene[i] = randval ( population[j].lower[i], population[j].upper[i] );
     }
   }
-
-  return;
 }
 
 void keep_the_best (input_params& ip, genotype* population) {
-  int cur_best;
-  int mem;
-  int i;
-
-  cur_best = 0;
-
-  for ( mem = 0; mem < ip.population; mem++ )
-  {
-    if ( population[mem].fitness > population[ip.population].fitness )
-    {
-      cur_best = mem;
-      population[ip.population].fitness = population[mem].fitness;
-    }
-  }
-// 
-//  Once the best member in the population is found, copy the genes.
-//
-  for ( i = 0; i < ip.num_dims; i++ )
-  {
-    population[ip.population].gene[i] = population[cur_best].gene[i];
-  }
-
-  return;
+	int cur_best = 0;
+	for (int mem = 0; mem < ip.population; mem++) {
+		if (population[mem].fitness > population[ip.population].fitness) {
+			cur_best = mem;
+			population[ip.population].fitness = population[mem].fitness;
+		}
+	}
+	for (int i = 0; i < ip.num_dims; i++) {
+		population[ip.population].gene[i] = population[cur_best].gene[i];
+	}
 }
 
 void mutate (input_params& ip, genotype* population) {
@@ -267,8 +268,6 @@ void mutate (input_params& ip, genotype* population) {
       }
     }
   }
-
-  return;
 }
 
 void r8_swap ( double *x, double *y ) {
@@ -277,8 +276,6 @@ void r8_swap ( double *x, double *y ) {
   temp = *x;
   *x = *y;
   *y = temp;
-
-  return;
 }
 
 double randval ( double low, double high ) {
@@ -291,11 +288,11 @@ double randval ( double low, double high ) {
 }
 
 void report (int generation, input_params& ip, genotype* population) {
-  double avg;
+  //double avg;
   double best_val;
   int i;
-  double square_sum;
-  double stddev;
+  //double square_sum;
+  //double stddev;
   double sum;
   double sum_square;
 
@@ -308,17 +305,15 @@ void report (int generation, input_params& ip, genotype* population) {
     sum_square = sum_square + population[i].fitness * population[i].fitness;
   }
 
-  avg = sum / ( double ) ip.population;
-  square_sum = avg * avg * ip.population;
-  stddev = sqrt ( ( sum_square - square_sum ) / ( ip.population - 1 ) );
+  //avg = sum / ( double ) ip.population;
+  //square_sum = avg * avg * ip.population;
+  //stddev = sqrt ( ( sum_square - square_sum ) / ( ip.population - 1 ) );
   best_val = population[ip.population].fitness;
 
-  cout << "  " << setw(8) << generation 
-       << " " << best_val 
-       << " " << avg 
-       << " " << stddev << "\n";
-
-  return;
+  term->verbose() << "  ";
+  cout << term->blue << "Done: " << term->reset << "the best score ";
+  term->verbose() << "for generation " << generation << " ";
+  cout << "was " << best_val << endl;
 }
 
 void selector (input_params& ip, genotype* population, genotype* newpopulation) {
@@ -358,7 +353,7 @@ void selector (input_params& ip, genotype* population, genotype* newpopulation) 
     p = rand() % 1000 / 1000.0;
     if (p < population[0].cfitness)
     {
-      newpopulation[i] = population[0];      
+      newpopulation[i] = population[0];
     }
     else
     {
@@ -376,10 +371,8 @@ void selector (input_params& ip, genotype* population, genotype* newpopulation) 
 //
   for ( i = 0; i < ip.population; i++ )
   {
-    population[i] = newpopulation[i]; 
-  }
-
-  return;     
+    population[i] = newpopulation[i];
+  }  
 }
 
 void Xover (int one, int two, input_params& ip, genotype* population) {
@@ -406,6 +399,5 @@ void Xover (int one, int two, input_params& ip, genotype* population) {
     }
 
   }
-  return;
 }
 

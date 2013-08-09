@@ -26,7 +26,12 @@ Avoid placing I/O functions here and add them to io.cpp instead.
 #include "galib.cpp"
 #include "io.hpp"
 
+extern terminal* term; // Declared in init.cpp
+
 void run_ga (input_params& ip) {
+	cout << term->blue << "Running initialization simulations " << term->reset << ". . . ";
+	cout.flush();
+	term->verbose() << endl;
 	genotype population[ip.population + 1];
 	genotype newpopulation[ip.population + 1];
 	for (int i = 0; i < ip.population + 1; i++) {
@@ -36,13 +41,20 @@ void run_ga (input_params& ip) {
 	initialize(ip, population);
 	evaluate(ip, population);
 	keep_the_best(ip, population);
+	cout << term->blue << "Done";
+	term->verbose() << " with initialization simulations";
+	cout << term->reset << endl;
 	for (int generation = 0; generation < ip.generations; generation++) {
+		cout << term->blue << "Running generation " << term->reset << generation << " . . . ";
+		cout.flush();
+		term->verbose() << endl;
 		selector(ip, population, newpopulation);
 		crossover(ip, population);
 		mutate(ip, population);
-		report(generation, ip, population);
 		evaluate(ip, population);
 		elitist(ip, population);
+		report(generation, ip, population);
 	}
+	cout << term->blue << "Best score: " << term->reset << population[ip.population].fitness << endl;
 }
 

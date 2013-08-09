@@ -75,11 +75,6 @@ struct terminal {
 		delete verbose_stream;
 	}
 	
-	// Prints two spaces and then the given MPI rank in parentheses
-	void rank (int rank) {
-		cout << this->yellow << "(" << rank << ") " << this->reset;
-	}
-	
 	// Indicates a process is done (pass terminal->verbose() into this function to print only with verbose mode on)
 	void done (ostream& stream) {
 		stream << this->blue << "Done" << this->reset << endl;

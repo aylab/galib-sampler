@@ -29,7 +29,7 @@ void store_filename(char**, const char*);
 void read_file(input_data*);
 void parse_ranges_file(char*, input_params&);
 void open_file(ofstream*, const char*, bool);
-double simulate_set(input_params&, double[]);
+double simulate_set(input_params&, int[]);
 void write_pipe(int, double[]);
 void write_pipe_int(int, int);
 void read_pipe(int, int*, int*);

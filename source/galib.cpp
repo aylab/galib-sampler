@@ -197,7 +197,7 @@ void elitist (input_params& ip, genotype* population) {
 void evaluate (input_params& ip, genotype* population) {
   int member;
   int i;
-  double x[ip.num_dims];
+  int x[ip.num_dims];
 
   for ( member = 0; member < ip.population; member++ )
   {

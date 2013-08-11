@@ -172,7 +172,7 @@ void open_file (ofstream* file_pointer, const char* file_name, bool append) {
 	notes:
 	todo:
 */
-double simulate_set (input_params& ip, double parameters[]) {
+double simulate_set (input_params& ip, int parameters[]) {
 	ostream& v = term->verbose();
 	
 	// Create a pipe
